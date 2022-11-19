@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { RigidBody } from "@react-three/rapier";
-import { useRef } from "react";
+import { useState, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 
 THREE.ColorManagement.legacyMode = false;
@@ -31,12 +31,15 @@ function BlockStart({ position = [0, 0, 0] }) {
 
 function BlockSpinner({ position = [0, 0, 0] }) {
   const obstacle = useRef();
+  const [speed] = useState(
+    () => (Math.random() + 0.2) * (Math.random() < 0.5 ? -1 : 1)
+  );
 
   useFrame((state) => {
     const time = state.clock.getElapsedTime();
 
     const rotation = new THREE.Quaternion();
-    rotation.setFromEuler(new THREE.Euler(0, time, 0));
+    rotation.setFromEuler(new THREE.Euler(0, time * speed, 0));
     obstacle.current.setNextKinematicRotation(rotation);
   });
 
