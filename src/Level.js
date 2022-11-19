@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { RigidBody } from "@react-three/rapier";
 import { useState, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
+import { useGLTF } from "@react-three/drei";
 
 THREE.ColorManagement.legacyMode = false;
 
@@ -30,6 +31,15 @@ function BlockStart({ position = [0, 0, 0] }) {
 }
 
 function BlockEnd({ position = [0, 0, 0] }) {
+  const hamburger = useGLTF("./hamburger.glb");
+  const duck = useGLTF("duck.glb");
+
+  duck.scene.children[0].children[1].castShadow = true;
+
+  hamburger.scene.children.forEach((mesh) => {
+    mesh.castShadow = true;
+  });
+
   return (
     <group position={position}>
       {/* Floor1 */}
@@ -42,6 +52,19 @@ function BlockEnd({ position = [0, 0, 0] }) {
       >
         <meshStandardMaterial color="limegreen" />
       </mesh>
+      <RigidBody
+        type="fixed"
+        colliders="hull"
+        position={[0, 0, 0]}
+        restitution={0.2}
+        friction={0}
+      >
+        <primitive
+          object={duck.scene}
+          scale={1.2}
+          rotation={[0, -Math.PI / 2, 0]}
+        />
+      </RigidBody>
     </group>
   );
 }
