@@ -1,6 +1,14 @@
 import { OrbitControls } from "@react-three/drei";
 import { Physics, Debug } from "@react-three/rapier";
-import Level from "./Level.js";
+import {
+  BlockStart,
+  BlockAxe,
+  BlockEnd,
+  BlockLimbo,
+  BlockSpinner,
+  Level,
+} from "./Level.js";
+import Player from "./Player.js";
 import Lights from "./Lights.js";
 
 export default function Experience() {
@@ -11,7 +19,8 @@ export default function Experience() {
       <Physics>
         <Debug />
         <Lights />
-        <Level />
+        <Level count={5} types={[BlockSpinner, BlockAxe, BlockLimbo]} />
+        <Player />
       </Physics>
     </>
   );
