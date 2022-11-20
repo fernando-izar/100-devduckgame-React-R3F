@@ -2,6 +2,7 @@ import { useRapier, RigidBody } from "@react-three/rapier";
 import { useFrame } from "@react-three/fiber";
 import { useKeyboardControls } from "@react-three/drei";
 import { useEffect, useRef } from "react";
+import * as THREE from "three";
 
 export default function Player() {
   const body = useRef();
@@ -67,6 +68,20 @@ export default function Player() {
 
     body.current.applyImpulse(impulse);
     body.current.applyTorqueImpulse(torque);
+
+    // Camera
+    const bodyPosition = body.current.translation();
+    const cameraPosition = new THREE.Vector3();
+    cameraPosition.copy(bodyPosition);
+    cameraPosition.z += 2.25;
+    cameraPosition.y += 0.65;
+
+    const cameraTarget = new THREE.Vector3();
+    cameraTarget.copy(bodyPosition);
+    cameraTarget.y += 0.25;
+
+    state.camera.position.copy(cameraPosition);
+    state.camera.lookAt(cameraTarget);
   });
 
   return (
