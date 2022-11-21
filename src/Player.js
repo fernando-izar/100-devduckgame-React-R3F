@@ -11,7 +11,7 @@ export default function Player() {
   const rapierWorld = world.raw();
 
   const [smoothedCameraPosition] = useState(
-    () => new THREE.Vector3(20, -20, 20)
+    () => new THREE.Vector3(10, -10, 10)
   );
   const [smoothedCameraTarget] = useState(() => new THREE.Vector3());
 
