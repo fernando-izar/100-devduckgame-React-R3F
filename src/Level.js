@@ -1,7 +1,8 @@
 import * as THREE from "three";
-import { RigidBody } from "@react-three/rapier";
-import { useState, useRef } from "react";
+import { CuboidCollider, RigidBody } from "@react-three/rapier";
+import { useMemo, useState, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
+import { Float, Text, useGLTF } from "@react-three/drei";
 
 THREE.ColorManagement.legacyMode = false;
 
@@ -12,10 +13,24 @@ const floor2Material = new THREE.MeshStandardMaterial({ color: "greenyellow" });
 const obstacleMaterial = new THREE.MeshStandardMaterial({ color: "orangered" });
 const wallMaterial = new THREE.MeshStandardMaterial({ color: "slategrey" });
 
-function BlockStart({ position = [0, 0, 0] }) {
+export function BlockStart({ position = [0, 0, 0] }) {
   return (
     <group position={position}>
       {/* Floor1 */}
+      <Float floatIntensity={0.75} rotationIntensity={0.85}>
+        <Text
+          font="./bebas-neue-v9-latin-regular.woff"
+          scale={2}
+          maxWidth={0.25}
+          lineHeight={0.75}
+          textAlign="right"
+          position={[0.75, 0.65, 0]}
+          rotation-y={-0.25}
+        >
+          devDuck Game
+          <meshBasicMaterial toneMapped={false} />
+        </Text>
+      </Float>
       <mesh
         geometry={boxGeometry}
         material={floor1Material}
@@ -29,10 +44,30 @@ function BlockStart({ position = [0, 0, 0] }) {
   );
 }
 
-function BlockEnd({ position = [0, 0, 0] }) {
+export function BlockEnd({ position = [0, 0, 0] }) {
+  const hamburger = useGLTF("./hamburger.glb");
+  const duck = useGLTF("duck.glb");
+
+  duck.scene.children[0].children[1].castShadow = true;
+
+  hamburger.scene.children.forEach((mesh) => {
+    mesh.castShadow = true;
+  });
+
   return (
     <group position={position}>
       {/* Floor1 */}
+      <Float speed={10} floatIntensity={4} rotationIntensity={5}>
+        <Text
+          font="./bebas-neue-v9-latin-regular.woff"
+          color={"#B833FF"}
+          scale={8}
+          position={[0, 4, 2]}
+        >
+          COME ON DEV!!!
+          <meshBasicMaterial toneMapped={false} />
+        </Text>
+      </Float>
       <mesh
         geometry={boxGeometry}
         material={floor1Material}
@@ -42,11 +77,24 @@ function BlockEnd({ position = [0, 0, 0] }) {
       >
         <meshStandardMaterial color="limegreen" />
       </mesh>
+      <RigidBody
+        type="fixed"
+        colliders="hull"
+        position={[0, 0, 0]}
+        restitution={0.2}
+        friction={0}
+      >
+        <primitive
+          object={duck.scene}
+          scale={1.2}
+          rotation={[0, -Math.PI / 2, 0]}
+        />
+      </RigidBody>
     </group>
   );
 }
 
-function BlockSpinner({ position = [0, 0, 0] }) {
+export function BlockSpinner({ position = [0, 0, 0] }) {
   const obstacle = useRef();
   const [speed] = useState(
     () => (Math.random() + 0.2) * (Math.random() < 0.5 ? -1 : 1)
@@ -92,7 +140,7 @@ function BlockSpinner({ position = [0, 0, 0] }) {
   );
 }
 
-function BlockLimbo({ position = [0, 0, 0] }) {
+export function BlockLimbo({ position = [0, 0, 0] }) {
   const obstacle = useRef();
   const [timeOffset] = useState(() => Math.random() * Math.PI * 2);
 
@@ -139,7 +187,7 @@ function BlockLimbo({ position = [0, 0, 0] }) {
   );
 }
 
-function BlockAxe({ position = [0, 0, 0] }) {
+export function BlockAxe({ position = [0, 0, 0] }) {
   const obstacle = useRef();
   const [timeOffset] = useState(() => Math.random() * Math.PI * 2);
 
@@ -186,14 +234,69 @@ function BlockAxe({ position = [0, 0, 0] }) {
   );
 }
 
-export default function Level() {
+export function Bounds({ length = 1 }) {
   return (
     <>
-      <BlockStart position={[0, 0, 16]} />
-      <BlockSpinner position={[0, 0, 12]} />
-      <BlockLimbo position={[0, 0, 8]} />
-      <BlockAxe position={[0, 0, 4]} />
-      <BlockEnd position={[0, 0, 0]} />
+      <RigidBody type="fixed" restitution={0.2} friction={0}>
+        <mesh
+          position={[2.15, 0.75, -(length * 2) + 2]}
+          geometry={boxGeometry}
+          material={wallMaterial}
+          scale={[0.3, 1.5, 4 * length]}
+          castShadow
+        />
+        <mesh
+          position={[-2.15, 0.75, -(length * 2) + 2]}
+          geometry={boxGeometry}
+          material={wallMaterial}
+          scale={[0.3, 1.5, 4 * length]}
+          receiveShadow
+        />
+        <mesh
+          position={[0, 0.75, -(length * 4) + 2]}
+          geometry={boxGeometry}
+          material={wallMaterial}
+          scale={[4, 1.5, 0.3]}
+          castShadow
+        />
+        <CuboidCollider
+          args={[2, 0.1, 2 * length]}
+          position={[0, -0.1, -(length * 2) + 2]}
+          restitution={0.2}
+          friction={1}
+        />
+      </RigidBody>
+    </>
+  );
+}
+
+export function Level({
+  count = 5,
+  types = [BlockSpinner, BlockAxe, BlockLimbo],
+  seed = 0,
+}) {
+  const blocks = useMemo(() => {
+    const blocks = [];
+
+    for (let i = 0; i < count; i++) {
+      const type = types[Math.floor(Math.random() * types.length)];
+      blocks.push(type);
+    }
+
+    return blocks;
+  }, [count, types, seed]);
+
+  return (
+    <>
+      <BlockStart position={[0, 0, 0]} />
+
+      {blocks.map((Block, index) => (
+        <Block key={index} position={[0, 0, -(index + 1) * 4]} />
+      ))}
+
+      <BlockEnd position={[0, 0, -(count + 1) * 4]} />
+
+      <Bounds length={count + 2} />
     </>
   );
 }
