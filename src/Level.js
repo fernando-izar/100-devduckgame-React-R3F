@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { CuboidCollider, RigidBody } from "@react-three/rapier";
 import { useMemo, useState, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { useGLTF } from "@react-three/drei";
+import { Float, Text, useGLTF } from "@react-three/drei";
 
 THREE.ColorManagement.legacyMode = false;
 
@@ -17,6 +17,20 @@ export function BlockStart({ position = [0, 0, 0] }) {
   return (
     <group position={position}>
       {/* Floor1 */}
+      <Float floatIntensity={0.75} rotationIntensity={0.85}>
+        <Text
+          font="./bebas-neue-v9-latin-regular.woff"
+          scale={2}
+          maxWidth={0.25}
+          lineHeight={0.75}
+          textAlign="right"
+          position={[0.75, 0.65, 0]}
+          rotation-y={-0.25}
+        >
+          devDuck Game
+          <meshBasicMaterial toneMapped={false} />
+        </Text>
+      </Float>
       <mesh
         geometry={boxGeometry}
         material={floor1Material}
@@ -43,6 +57,17 @@ export function BlockEnd({ position = [0, 0, 0] }) {
   return (
     <group position={position}>
       {/* Floor1 */}
+      <Float speed={10} floatIntensity={4} rotationIntensity={5}>
+        <Text
+          font="./bebas-neue-v9-latin-regular.woff"
+          color={"#B833FF"}
+          scale={8}
+          position={[0, 4, 2]}
+        >
+          COME ON DEV!!!
+          <meshBasicMaterial toneMapped={false} />
+        </Text>
+      </Float>
       <mesh
         geometry={boxGeometry}
         material={floor1Material}
@@ -248,6 +273,7 @@ export function Bounds({ length = 1 }) {
 export function Level({
   count = 5,
   types = [BlockSpinner, BlockAxe, BlockLimbo],
+  seed = 0,
 }) {
   const blocks = useMemo(() => {
     const blocks = [];
@@ -258,7 +284,7 @@ export function Level({
     }
 
     return blocks;
-  }, [count, types]);
+  }, [count, types, seed]);
 
   return (
     <>
