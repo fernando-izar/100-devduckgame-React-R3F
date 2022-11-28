@@ -3,7 +3,7 @@ import { useFrame } from "@react-three/fiber";
 import { useKeyboardControls } from "@react-three/drei";
 import { useState, useEffect, useRef } from "react";
 import * as THREE from "three";
-import useGame from "./stores/useGame";
+import useGame from "../stores/useGame";
 
 export default function Player() {
   const body = useRef();
