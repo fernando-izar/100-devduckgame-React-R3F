@@ -1,3 +1,3 @@
 # Play the game!!!
 
-https://duckdevgame.netlify.app/
+https://devduckgame.netlify.app/
