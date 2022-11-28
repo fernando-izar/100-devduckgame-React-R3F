@@ -1,15 +1,11 @@
-import { Physics, Debug } from "@react-three/rapier";
-import {
-  BlockStart,
-  BlockAxe,
-  BlockEnd,
-  BlockLimbo,
-  BlockSpinner,
-  Level,
-} from "./Level.js";
-import Player from "./Player.js";
-import Lights from "./Lights.js";
+import { Physics } from "@react-three/rapier";
+import { Level } from "./components/Level";
+import Player from "./components/Player";
+import Lights from "./components/Lights";
 import useGame from "./stores/useGame.js";
+import BlockSpinner from "./components/BlockSpinner";
+import BlockLimbo from "./components/BlockLimbo";
+import BlockAxe from "./components/BlockAxe";
 
 export default function Experience() {
   const blocksCount = useGame((state) => state.blocksCount);
@@ -20,7 +16,6 @@ export default function Experience() {
       <color args={["#bdedfc"]} attach="background" />
 
       <Physics>
-        {/* <Debug /> */}
         <Lights />
         <Level
           count={blocksCount}
